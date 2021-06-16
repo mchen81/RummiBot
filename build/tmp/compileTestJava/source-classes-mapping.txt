@@ -1,0 +1,6 @@
+com/jerry/fun/rummibot/AppTest.java
+ com.jerry.fun.rummibot.AppTest
+com/jerry/fun/rummibot/tiles/TileTest.java
+ com.jerry.fun.rummibot.tiles.TileTest
+com/jerry/fun/rummibot/tiles/TileSetTest.java
+ com.jerry.fun.rummibot.tiles.TileSetTest
