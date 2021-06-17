@@ -37,7 +37,7 @@ public class Tile {
 
     @Override
     public int hashCode() {
-        return tileColor.getCode() * number + 117;
+        return Objects.hash(tileColor.toString(), number);
     }
 
     @Override
@@ -46,5 +46,10 @@ public class Tile {
         if (o == null || getClass() != o.getClass()) return false;
         Tile tile = (Tile) o;
         return Objects.equals(number, tile.number) && tileColor == tile.tileColor;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{%s %d}", tileColor.toString(), number);
     }
 }

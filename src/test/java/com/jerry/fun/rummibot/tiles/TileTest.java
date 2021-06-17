@@ -4,6 +4,9 @@ import com.jerry.fun.rummibot.enums.TileColor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class TileTest {
 
     @Test
@@ -21,8 +24,8 @@ public class TileTest {
 
     @Test
     public void testDiffTiles() {
-        Tile tile1 = new Tile(12, 1);
-        Tile tile2 = new Tile(12, 2);
+        Tile tile1 = new Tile(13, TileColor.BLUE);
+        Tile tile2 = new Tile(5, TileColor.RED);
         Tile tile3 = new Tile(12, TileColor.ORANGE);
 
         Assertions.assertNotEquals(tile2, tile1);
@@ -45,6 +48,27 @@ public class TileTest {
         String expectedMessage = "Color code can only be 1,2,3, or 4";
         String actualMessage = exception.getMessage();
         Assertions.assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void testTileWithSet() {
+
+        Set<Tile> tileSet = new HashSet<>();
+        tileSet.add(new Tile(13, 1));
+        tileSet.add(new Tile(13, 2));
+        tileSet.add(new Tile(13, 3));
+        tileSet.add(new Tile(13, 4));
+
+        Assertions.assertTrue(tileSet.contains(new Tile(13, 1)));
+        Assertions.assertTrue(tileSet.contains(new Tile(13, 2)));
+        Assertions.assertTrue(tileSet.contains(new Tile(13, 3)));
+        Assertions.assertTrue(tileSet.contains(new Tile(13, 4)));
+
+        for (int num = 1; num < 13; num++) {
+            for (int color = 1; color <= 4; color++) {
+                Assertions.assertFalse(tileSet.contains(new Tile(num, color)));
+            }
+        }
     }
 
 }
