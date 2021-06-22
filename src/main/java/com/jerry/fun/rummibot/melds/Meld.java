@@ -12,9 +12,13 @@ public abstract class Meld {
 
     public abstract boolean isSplittable();
 
-    public abstract List<Tile> getSplittableTiles();
+    public abstract List<Meld> split();
+
+    public abstract boolean isRemovable();
 
     public abstract boolean removeTile(Tile tile);
+
+    public abstract List<Tile> getRemovableTiles();
 
     public abstract boolean isAddable();
 
@@ -42,9 +46,10 @@ public abstract class Meld {
         if (o == null || getClass() != o.getClass()) return false;
         Meld meld = (Meld) o;
 
-        return getMeldSize() == meld.getMeldSize()
-                && tiles.retainAll(meld.tiles)
-                && meld.tiles.retainAll(tiles);
+
+        return this.getMeldSize() == meld.getMeldSize()
+                && tiles.containsAll(meld.tiles)
+                && meld.tiles.containsAll(tiles);
     }
 
     @Override

@@ -17,6 +17,18 @@ public class GroupTest {
     Tile RE13 = new Tile(13, TileColor.RED);
     Tile RE5 = new Tile(5, TileColor.RED);
 
+
+    @Test
+    public void testEqualGroup() {
+
+        Meld g1 = new GroupMeld(List.of(BL13, OR13, BK13));
+        Meld g2 = new GroupMeld(List.of(OR13, BK13, BL13));
+        assertEquals(g2, g1);
+
+        Meld g3 = new GroupMeld(List.of(OR13, BK13, BL13, RE13));
+        assertNotEquals(g2, g3);
+    }
+
     @Test
     public void testInvalidGroups() {
         assertThrows(InvalidMeldException.class, () -> new GroupMeld(List.of(BK13, OR13, RE13, RE13)), "Has same color");
@@ -85,7 +97,7 @@ public class GroupTest {
 
         Meld meld = new GroupMeld(List.of(BK13, BL13, RE13, OR13));
 
-        assertTrue(meld.isSplittable());
+        assertTrue(meld.isRemovable());
         assertFalse(meld.removeTile(RE5));
         assertFalse(meld.removeTile(new Tile(12, TileColor.ORANGE)));
 
@@ -98,6 +110,29 @@ public class GroupTest {
 
         assertEquals(meld.getMeldSize(), 3);
         assertFalse(meld.isSplittable());
+
+    }
+
+    @Test
+    public void groupMeldShouldNotSplit() {
+        Meld meld = new GroupMeld(List.of(BK13, BL13, RE13, OR13));
+        assertFalse(meld.isSplittable());
+        assertEquals(meld.split().size(), 0);
+    }
+
+    @Test
+    public void testGetRemovableTiles() {
+
+        Meld group1 = new GroupMeld(List.of(BK13, BL13, RE13, OR13));
+        Meld group2 = new GroupMeld(List.of(BK13, BL13, RE13));
+
+        assertEquals(4, group1.getRemovableTiles().size());
+        assertTrue(group1.getRemovableTiles().contains(BK13));
+        assertTrue(group1.getRemovableTiles().contains(BL13));
+        assertTrue(group1.getRemovableTiles().contains(RE13));
+        assertTrue(group1.getRemovableTiles().contains(OR13));
+        assertEquals(0, group2.getRemovableTiles().size());
+
 
     }
 
