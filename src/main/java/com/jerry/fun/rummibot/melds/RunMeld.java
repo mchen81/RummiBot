@@ -93,18 +93,18 @@ public class RunMeld extends Meld {
     }
 
     @Override
-    public List<Tile> getRemovableTiles() {
+    public Set<Tile> findRemovableTiles() {
         if (isRemovable()) {
             Tile[] tileArr = new Tile[this.tiles.size()];
             tileArr = this.tiles.toArray(tileArr);
 
             Tile[] finalTileArr = tileArr;
-            return new ArrayList<>() {{
+            return new HashSet<>() {{
                 add(finalTileArr[0]);
                 add(finalTileArr[finalTileArr.length - 1]);
             }};
         }
-        return new ArrayList<>();
+        return new HashSet<>();
     }
 
     @Override
@@ -148,6 +148,7 @@ public class RunMeld extends Meld {
 
         return false;
     }
+
 
     @Override
     public boolean fit(Tile tile) {
@@ -222,8 +223,13 @@ public class RunMeld extends Meld {
         return addableTiles;
     }
 
-    private Set<Tile> findAddableTiles() {
+    @Override
+    public Set<Tile> findAddableTiles() {
         Set<Tile> addableTiles = new HashSet<>(findAddableSideTiles());
+        if (tableDelegate == null) {
+            return addableTiles;
+        }
+
         List<Tile> currTiles = new ArrayList<>(this.tiles);
         for (int i = 2; i < currTiles.size() - 2; i++) {
             addableTiles.add(currTiles.get(i));

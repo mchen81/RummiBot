@@ -126,13 +126,25 @@ public class GroupTest {
         Meld group1 = new GroupMeld(List.of(BK13, BL13, RE13, OR13));
         Meld group2 = new GroupMeld(List.of(BK13, BL13, RE13));
 
-        assertEquals(4, group1.getRemovableTiles().size());
-        assertTrue(group1.getRemovableTiles().contains(BK13));
-        assertTrue(group1.getRemovableTiles().contains(BL13));
-        assertTrue(group1.getRemovableTiles().contains(RE13));
-        assertTrue(group1.getRemovableTiles().contains(OR13));
-        assertEquals(0, group2.getRemovableTiles().size());
+        assertEquals(4, group1.findRemovableTiles().size());
+        assertTrue(group1.findRemovableTiles().contains(BK13));
+        assertTrue(group1.findRemovableTiles().contains(BL13));
+        assertTrue(group1.findRemovableTiles().contains(RE13));
+        assertTrue(group1.findRemovableTiles().contains(OR13));
+        assertEquals(0, group2.findRemovableTiles().size());
 
+
+    }
+
+    @Test
+    public void testFindAddableTiles() {
+
+        Meld group1 = new GroupMeld(List.of(BK13, BL13, RE13, OR13));
+        Meld group2 = new GroupMeld(List.of(BK13, BL13, RE13));
+
+        assertEquals(0, group1.findAddableTiles().size());
+        assertEquals(1, group2.findAddableTiles().size());
+        assertTrue(group2.findAddableTiles().contains(OR13));
 
     }
 

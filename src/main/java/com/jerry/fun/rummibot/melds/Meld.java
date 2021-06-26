@@ -18,11 +18,13 @@ public abstract class Meld {
 
     public abstract boolean removeTile(Tile tile);
 
-    public abstract List<Tile> getRemovableTiles();
+    public abstract Set<Tile> findRemovableTiles();
 
     public abstract boolean isAddable();
 
     public abstract boolean addTile(Tile tile);
+
+    public abstract Set<Tile> findAddableTiles();
 
     public abstract boolean fit(Tile tile);
 

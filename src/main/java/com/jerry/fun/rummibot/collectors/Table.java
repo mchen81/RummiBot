@@ -1,11 +1,12 @@
 package com.jerry.fun.rummibot.collectors;
 
+import com.jerry.fun.rummibot.enums.TileColor;
+import com.jerry.fun.rummibot.melds.GroupMeld;
 import com.jerry.fun.rummibot.melds.Meld;
 import com.jerry.fun.rummibot.melds.RunMeld;
 import com.jerry.fun.rummibot.tiles.Tile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Table {
 
@@ -41,7 +42,94 @@ public class Table {
 
     public boolean addTile(Tile tile) {
         prepareMovement();
-        // TODO
+        // case1: can add into exist meld
+        for (Meld meld : this.currMelds) {
+            if (meld.fit(tile)) {
+                meld.addTile(tile);
+                return true;
+            }
+        }
+
+        // TODO case2: need to take out some tiles from other melds
+
+        final Set<Tile> sameNumberTiles = new HashSet<>(Set.of(
+                new Tile(tile.getNumber(), TileColor.BLACK),
+                new Tile(tile.getNumber(), TileColor.BLUE),
+                new Tile(tile.getNumber(), TileColor.ORANGE),
+                new Tile(tile.getNumber(), TileColor.RED)));
+        sameNumberTiles.remove(tile);
+
+        // form a group with two tiles from other melds
+        Map<Tile, Meld> candidates = new HashMap<>();
+        for (Meld meld : this.currMelds) {
+            if (!meld.isRemovable()) {
+                continue;
+            }
+            Set<Tile> removableTiles = meld.findRemovableTiles();
+            Set<Tile> groupTiles = new HashSet<>(sameNumberTiles);
+            if (groupTiles.retainAll(removableTiles) &&
+                    !candidates.containsKey(groupTiles.iterator().next())) {
+                candidates.put(groupTiles.iterator().next(), meld);
+            }
+        }
+        Tile[] twoOtherTiles = new Tile[2];
+        if (candidates.size() > 1) {
+            int c = 0;
+            for (Tile candidate : candidates.keySet()) {
+                if (c > 1) {
+                    break;
+                }
+                candidates.get(candidate).removeTile(candidate);
+                twoOtherTiles[c] = candidate;
+                c++;
+            }
+            this.addMeld(new GroupMeld(List.of(twoOtherTiles[0], twoOtherTiles[1], tile)));
+            return true;
+        }
+
+        // form a run
+        Tile[] runTiles = new Tile[2];
+        if (tile.getNumber() == 1) {
+            runTiles[0] = new Tile(2, tile.getColor());
+            runTiles[1] = new Tile(3, tile.getColor());
+        } else if (tile.getNumber() == 13) {
+            runTiles[0] = new Tile(12, tile.getColor());
+            runTiles[1] = new Tile(11, tile.getColor());
+        } else {
+            runTiles[0] = new Tile(tile.getNumber() + 1, tile.getColor());
+            runTiles[1] = new Tile(tile.getNumber() - 1, tile.getColor());
+        }
+
+        candidates = new HashMap<>();
+        Set<Tile> neededTiles;
+        for (Meld meld : this.currMelds) {
+            if (!meld.isRemovable()) {
+                continue;
+            }
+            neededTiles = new HashSet<>(List.of(runTiles[0], runTiles[1]));
+            if (neededTiles.retainAll(meld.findRemovableTiles())) {
+                for (Tile nt : neededTiles) {
+                    // TODO: probably has bug here
+                    candidates.put(nt, meld);
+                }
+            }
+        }
+
+        twoOtherTiles = new Tile[2];
+        if (candidates.size() > 1) {
+            int c = 0;
+            for (Tile candidate : candidates.keySet()) {
+                if (c > 1) {
+                    break;
+                }
+                candidates.get(candidate).removeTile(candidate);
+                twoOtherTiles[c] = candidate;
+                c++;
+            }
+            this.addMeld(new RunMeld(List.of(twoOtherTiles[0], twoOtherTiles[1], tile)));
+            return true;
+        }
+
         return false;
     }
 

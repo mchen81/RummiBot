@@ -1,11 +1,13 @@
 package com.jerry.fun.rummibot.melds;
 
+import com.jerry.fun.rummibot.collectors.Table;
 import com.jerry.fun.rummibot.enums.TileColor;
 import com.jerry.fun.rummibot.exceptions.InvalidMeldException;
 import com.jerry.fun.rummibot.tiles.Tile;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,6 +23,8 @@ public class RunTest {
     Tile B9 = new Tile(9, TileColor.BLACK);
     Tile B10 = new Tile(10, TileColor.BLACK);
 
+
+    Tile O6 = new Tile(6, TileColor.ORANGE);
     Tile O7 = new Tile(7, TileColor.ORANGE);
     Tile O8 = new Tile(8, TileColor.ORANGE);
     Tile O9 = new Tile(9, TileColor.ORANGE);
@@ -84,21 +88,46 @@ public class RunTest {
     }
 
     @Test
-    public void testGetRemovableTiles(){
+    public void testGetRemovableTiles() {
         Meld r1 = new RunMeld(List.of(R3, R4, R5, R6));
         Meld r2 = new RunMeld(List.of(O11, O10, O13, O12));
         Meld r3 = new RunMeld(List.of(B9, B8, B7));
 
-        assertEquals(r1.getRemovableTiles().size(), 2);
-        assertTrue(r1.getRemovableTiles().contains(R3));
-        assertTrue(r1.getRemovableTiles().contains(R6));
+        assertEquals(r1.findRemovableTiles().size(), 2);
+        assertTrue(r1.findRemovableTiles().contains(R3));
+        assertTrue(r1.findRemovableTiles().contains(R6));
 
-        assertEquals(r2.getRemovableTiles().size(), 2);
-        assertTrue(r2.getRemovableTiles().contains(O10));
-        assertTrue(r2.getRemovableTiles().contains(O13));
+        assertEquals(r2.findRemovableTiles().size(), 2);
+        assertTrue(r2.findRemovableTiles().contains(O10));
+        assertTrue(r2.findRemovableTiles().contains(O13));
 
-        assertEquals(r3.getRemovableTiles().size(), 0);
+        assertEquals(r3.findRemovableTiles().size(), 0);
 
+
+    }
+
+
+    @Test
+    public void testFindAddableTiles() {
+        RunMeld r1 = new RunMeld(List.of(O6, O7, O8, O9, O10, O11, O12, O13));
+
+        assertEquals(1, r1.findAddableTiles().size());
+        assertTrue(r1.findAddableTiles().contains(new Tile(5, TileColor.ORANGE)));
+
+        r1.setTableDelegate(new Table());
+        Set<Tile> addableTiles = r1.findAddableTiles();
+        assertTrue(addableTiles.size() > 1);
+
+        assertFalse(addableTiles.contains(O6));
+        assertFalse(addableTiles.contains(O7));
+
+        assertFalse(addableTiles.contains(O12));
+        assertFalse(addableTiles.contains(O13));
+
+        assertTrue(addableTiles.contains(O8));
+        assertTrue(addableTiles.contains(O9));
+        assertTrue(addableTiles.contains(O10));
+        assertTrue(addableTiles.contains(O11));
 
     }
 

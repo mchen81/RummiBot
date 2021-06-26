@@ -49,11 +49,11 @@ public class GroupMeld extends Meld {
     }
 
     @Override
-    public List<Tile> getRemovableTiles() {
+    public Set<Tile> findRemovableTiles() {
         if (!isRemovable() || this.tiles.size() == 3) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
-        return new ArrayList<>(this.tiles);
+        return new HashSet<>(this.tiles);
     }
 
     @Override
@@ -84,6 +84,26 @@ public class GroupMeld extends Meld {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Set<Tile> findAddableTiles() {
+
+        if (this.tiles.size() == MeldRule.GROUP_MAX_TILE) {
+            return new HashSet<>();
+        }
+
+        final int number = this.tiles.iterator().next().getNumber();
+        Set<Tile> allColorTiles = new HashSet<>() {{
+            add(new Tile(number, TileColor.RED));
+            add(new Tile(number, TileColor.BLUE));
+            add(new Tile(number, TileColor.BLACK));
+            add(new Tile(number, TileColor.ORANGE));
+        }};
+
+        allColorTiles.removeAll(this.tiles);
+
+        return allColorTiles;
     }
 
     @Override
