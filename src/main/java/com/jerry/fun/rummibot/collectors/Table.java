@@ -68,6 +68,7 @@ public class Table {
             Set<Tile> removableTiles = meld.findRemovableTiles();
             Set<Tile> groupTiles = new HashSet<>(sameNumberTiles);
             if (groupTiles.retainAll(removableTiles) &&
+                    !groupTiles.isEmpty() &&
                     !candidates.containsKey(groupTiles.iterator().next())) {
                 candidates.put(groupTiles.iterator().next(), meld);
             }
@@ -122,7 +123,9 @@ public class Table {
                 if (c > 1) {
                     break;
                 }
-                candidates.get(candidate).removeTile(candidate);
+                if (!candidates.get(candidate).removeTile(candidate)) {
+                    throw new IllegalArgumentException("Cannot remove this tile");
+                }
                 twoOtherTiles[c] = candidate;
                 c++;
             }
@@ -145,6 +148,30 @@ public class Table {
             undoable = false;
         }
         throw new IllegalArgumentException("Cannot undo");
+    }
+
+
+    public boolean hasMeld(Meld meld) {
+        return currMelds.contains(meld);
+    }
+
+    public List<Meld> getCurrMelds() {
+        return new ArrayList<>(currMelds);
+    }
+
+    @Override
+    public String toString() {
+
+        if (currMelds.isEmpty()) {
+            return "Table is empty";
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Meld m : currMelds) {
+            stringBuilder.append(m.toString());
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
     }
 
 }

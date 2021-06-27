@@ -76,35 +76,65 @@ public class RunMeld extends Meld {
 
     @Override
     public boolean removeTile(Tile tile) {
-        if (!isRemovable()) {
+
+        Set<Tile> removableTiles = this.findRemovableTiles();
+        if (!removableTiles.contains(tile)) {
             return false;
         }
 
         Tile[] tileArr = new Tile[this.tiles.size()];
         tileArr = this.tiles.toArray(tileArr);
 
-        if (!tile.equals(tileArr[0]) || !tile.equals(tileArr[this.tiles.size() - 1])) {
-            return false;
+        // if the given tile is the side tile, can be removed directly
+        if (tile.equals(tileArr[0]) || tile.equals(tileArr[this.tiles.size() - 1])) {
+            try {
+                return this.tiles.remove(tile);
+            } finally {
+                selfVerify();
+            }
         }
-        boolean result = this.tiles.remove(tile);
-        selfVerify();
 
-        return result;
+        if (tableDelegate != null) {
+
+            List<Tile> run1 = new ArrayList<>();
+            List<Tile> run2 = new ArrayList<>();
+            int i = 0;
+            while (tileArr[i] != tile) {
+                run1.add(tileArr[i]);
+                i++;
+            }
+            for (i++; i < this.tiles.size(); i++) {
+                run2.add(tileArr[i]);
+            }
+
+            tableDelegate.removeMeld(this);
+            tableDelegate.addMeld(new RunMeld(run1));
+            tableDelegate.addMeld(new RunMeld(run2));
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public Set<Tile> findRemovableTiles() {
+
+        Set<Tile> removableTiles = new HashSet<>();
+
         if (isRemovable()) {
             Tile[] tileArr = new Tile[this.tiles.size()];
             tileArr = this.tiles.toArray(tileArr);
 
-            Tile[] finalTileArr = tileArr;
-            return new HashSet<>() {{
-                add(finalTileArr[0]);
-                add(finalTileArr[finalTileArr.length - 1]);
-            }};
+            removableTiles.add(tileArr[0]);
+            removableTiles.add(tileArr[tileArr.length - 1]);
+
+            if (tableDelegate != null && this.tiles.size() > 6) {
+                removableTiles.addAll(Arrays.asList(tileArr).subList(3, this.tiles.size() - 3));
+            }
+
         }
-        return new HashSet<>();
+
+        return removableTiles;
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.jerry.fun.rummibot.rules.TileRule;
 
 import java.util.Objects;
 
-public class Tile {
+public class Tile implements Cloneable {
 
     private Integer number;
     private TileColor tileColor;
@@ -51,5 +51,10 @@ public class Tile {
     @Override
     public String toString() {
         return String.format("{%s %d}", tileColor.toString(), number);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return new Tile(this.getNumber(), this.getColor());
     }
 }

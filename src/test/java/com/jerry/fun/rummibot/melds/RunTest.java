@@ -92,6 +92,7 @@ public class RunTest {
         Meld r1 = new RunMeld(List.of(R3, R4, R5, R6));
         Meld r2 = new RunMeld(List.of(O11, O10, O13, O12));
         Meld r3 = new RunMeld(List.of(B9, B8, B7));
+        RunMeld r4 = new RunMeld(List.of(O6, O7, O8, O9, O10, O11, O12, O13));
 
         assertEquals(r1.findRemovableTiles().size(), 2);
         assertTrue(r1.findRemovableTiles().contains(R3));
@@ -103,6 +104,17 @@ public class RunTest {
 
         assertEquals(r3.findRemovableTiles().size(), 0);
 
+
+        assertEquals(2, r4.findRemovableTiles().size());
+        assertTrue(r4.findRemovableTiles().contains(O6));
+        assertTrue(r4.findRemovableTiles().contains(O13));
+        assertFalse(r4.findRemovableTiles().contains(O9));
+        assertFalse(r4.findRemovableTiles().contains(O10));
+
+        r4.setTableDelegate(new Table());
+        assertEquals(4, r4.findRemovableTiles().size());
+        assertTrue(r4.findRemovableTiles().contains(O9));
+        assertTrue(r4.findRemovableTiles().contains(O10));
 
     }
 
@@ -130,5 +142,38 @@ public class RunTest {
         assertTrue(addableTiles.contains(O11));
 
     }
+
+    @Test
+    public void testRemoveTileWithoutTable() {
+        RunMeld r1 = new RunMeld(List.of(O6, O7, O8, O9, O10, O11, O12, O13));
+
+        assertTrue(r1.removeTile(O6));
+        assertTrue(r1.removeTile(O13));
+        assertTrue(r1.removeTile(O12));
+
+        //cannot add O13
+        assertFalse(r1.addTile(O13));
+
+        r1 = new RunMeld(List.of(O6, O7, O8, O9, O10, O11, O12, O13));
+        assertFalse(r1.removeTile(O10));
+        assertFalse(r1.removeTile(O9));
+
+    }
+
+    @Test
+    public void testRemoveTileWithTable() {
+        RunMeld r1 = new RunMeld(List.of(O6, O7, O8, O9, O10, O11, O12, O13));
+        Table table = new Table();
+        table.addMeld(r1);
+
+        assertEquals(1, table.getCurrMelds().size());
+        assertTrue(r1.removeTile(O9));
+        assertEquals(2, table.getCurrMelds().size());
+
+        assertTrue(table.hasMeld(new RunMeld(List.of(O6, O7, O8))));
+        assertTrue(table.hasMeld(new RunMeld(List.of(O10, O11, O12, O13))));
+
+    }
+
 
 }
